@@ -1,0 +1,13 @@
+#ide - vs2019
+.vs/*
+x64/*
+Debug/*
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+#sdl lib
+SDL2-2.0.10/*
+skia/*
+
