@@ -1,28 +1,55 @@
-/*
-	Author: Bill Tong, Nalsen Yang
-*/
-
 #ifndef STDAFX_H
 #define STDAFX_H
 
-#include"CWindow.h"
-#include"CSkiaUI.h"
-#include"GlobalVar.h"
+#include"ui.h"
+#include"variables.h"
 
-CWindow *menuWindow = new CWindow;
-
-void InitUI()
+void InitMenu()
 {
-	menuWindow->Init("Pixel Game",WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_Thread* thread = SDL_CreateThread(UpdateMenu, "update", (CWindow*)menuWindow);
+	SDL_Thread* thread = SDL_CreateThread(UpdateMenuUI, "menu_ui_update", (CWindow*)g_InitWindow);
 	SDL_Event e;
-	while (!menuWindow->m_bQuit) {
-		while (SDL_PollEvent(&e) != 0) {
-			if (e.type == SDL_QUIT)
-				menuWindow->m_bQuit = true;
+	int threadReturnValue;
+	while (!g_InitWindow->m_bQuit) 
+	{
+		while (SDL_PollEvent(&e) != 0) 
+		{
+			switch (e.type)
+			{
+			case SDL_QUIT:
+				g_InitWindow->m_bQuit = true;
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				if (g_iBtnStart.ContainsPoint(e.motion.x, e.motion.y))
+				{
+					SDL_Log("start btn click");
+					g_InitWindow->m_bStop = true;
+					SDL_WaitThread(thread, &threadReturnValue);
+					g_InitWindow->m_bStop = false;
+					InitGameLevelZero();
+					return;
+				}
+				if (g_iBtnCtrl.ContainsPoint(e.motion.x, e.motion.y))
+				{
+					SDL_Log("control btn click");
+					break;
+				}
+				if (g_iBtnCrdt.ContainsPoint(e.motion.x, e.motion.y))
+				{
+					SDL_Log("credit btn click");
+					break;
+				}
+				break;
+			default:
+				break;
+			}
 		}
 	}
-	menuWindow->Destroy();
+	g_InitWindow->Destroy();
+}
+
+void InitGameLevelZero()
+{
+
 }
 
 #endif // !STDAFX_H

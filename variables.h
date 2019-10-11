@@ -1,7 +1,3 @@
-/*
-	Author: Bill Tong
-*/
-
 #pragma once
 
 static struct RGBA {

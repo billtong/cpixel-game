@@ -8,3 +8,6 @@ This is an simple 2d game, for sdl2 and skia api library practice
 4. run it
 ## others
 figure it yourself pls
+# log
+- 20191010
+待改进：需要把UI + Thread放在用一个header file下。目的是公用变量。每一个场景做成单独的一个header file。
