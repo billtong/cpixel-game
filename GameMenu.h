@@ -12,8 +12,9 @@
 #include "CButton.hpp"
 #include "variables.h"
 
-static CWindow* g_InitWindow = new CWindow;
+#include "GameLvlZero.h"
 
+static CWindow* g_InitWindow = new CWindow;
 static SkBitmap g_iBmpMenu;
 static CButton g_iBtnStart("Start Game", RGBTable.yellow, RGBTable.navy, { 350, 50, 100, 250 });
 static CButton g_iBtnCtrl("Controls", RGBTable.yellow, RGBTable.navy, { 350, 50, 100, 350 });
@@ -22,6 +23,4 @@ static CButton g_iBtnCrdt("Credits", RGBTable.yellow, RGBTable.navy, { 350, 50, 
 int UpdateMenuUI(void* data);
 SkBitmap DrawMenu(int w, int h);
 
-static SkBitmap g_iBmpLevelZero;
-
-
+void InitMenu();
