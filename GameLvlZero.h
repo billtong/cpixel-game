@@ -17,14 +17,10 @@
 
 static SkBitmap g_iBmpLvlZero;
 static CPlayer g_iPlayer;
-
-
 static vector<CWall> g_gWalls;
+
 
 void InitGameLvlZero(CWindow* window);
 
 int UpdateGameLvlZeroUI(void* data);
 SkBitmap DrawGameLvlZero(int w, int h);
-
-int UpdateGForce(void* data);
-

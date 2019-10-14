@@ -12,6 +12,8 @@
 
 using std::string;
 
+enum class PlayerState { stay, walk, back, hop, walkhop, backhop };
+
 class CPlayer
 {
 public:
@@ -20,19 +22,23 @@ public:
 	Offset m_iOffset;
 	const static int sm_nW = 10;
 	const static int sm_nH = 20;
+	const static int sm_hopHeight = 30;
+	PlayerState m_eState;
+
 public:
 	CPlayer()
 	{
 		m_stName = "Jessie";
-		m_pRGB = RGBTable.white;
+		m_pRGB = RGBTable.red;
 		Offset temp = { sm_nW, sm_nH, 0, 0 };
 		m_iOffset = temp;
+		m_eState = PlayerState::stay;
 	}
-	CPlayer(string name, const int* rgb, SkScalar x, SkScalar y)
+	CPlayer(string name, const int* rgb, SkScalar x, SkScalar y) : CPlayer()
 	{
 		m_stName = name;
 		m_pRGB = rgb;
-		Offset temp = { sm_nW, sm_nH, x, y};
+		Offset temp = { sm_nW, sm_nH, x, y };
 		m_iOffset = temp;
 	}
 
@@ -44,35 +50,57 @@ public:
 		canvas.drawRRect(rrect, paint);
 	}
 
-	void Move(SDL_Keycode key, SDL_Surface *surface, vector<CWall> walls)
+	void Walk(bool isBack, SDL_Surface* surface, vector<CWall> walls)
 	{
-		SkScalar tempX = m_iOffset.x;
-		SkScalar tempY = m_iOffset.y;
-		switch (key)
+		for (int i = 1; i <= 6; i++)
 		{
-		case SDLK_LEFT:
-			SDL_Log("key left pressed");
-			m_iOffset.x -= 10;
-			break;
-		case SDLK_RIGHT:
-			SDL_Log("key right pressed");
-			m_iOffset.x += 10;
-			break;
-		case SDLK_UP:
-			m_iOffset.y -= 10;
-			SDL_Log("key up pressed");
-			break;
-		case SDLK_DOWN:
-			m_iOffset.y += 2;
-			SDL_Log("key down pressed");
-			break;
-		default:
-			break;
+			SkScalar tempX = m_iOffset.x;
+			m_iOffset.x = isBack ? m_iOffset.x - 1 : m_iOffset.x + 1;
+			if (CollideBoarder(surface->w, surface->h) || CollideWall(walls))
+			{
+				m_iOffset.x = tempX;
+				break;
+			}
 		}
-		if (CollideBoarder(surface->w, surface->h) || CollideWall(walls))
+		if (m_eState != PlayerState::backhop && m_eState != PlayerState::walkhop) {
+			m_eState = PlayerState::stay;
+		}
+	}
+
+	void Hop(SDL_Surface* surface, vector<CWall> walls, int& counter)
+	{
+		
+		if (counter == sm_hopHeight)
 		{
-			m_iOffset.x = tempX;
-			m_iOffset.y = tempY;
+			counter = 0;
+			m_eState = PlayerState::stay;
+		}
+		else {
+			for (int i = 1; i <= 8; i++)
+			{
+				SkScalar tempY = m_iOffset.y;
+				m_iOffset.y = counter < (sm_hopHeight / 2) ? m_iOffset.y - 1 : m_iOffset.y + 1;
+				if (CollideBoarder(surface->w, surface->h) || CollideWall(walls))
+				{
+					m_iOffset.y = tempY;
+					break;
+				}
+			}
+			counter++;
+		}
+	}
+
+	void Fall(SDL_Surface* surface, vector<CWall> walls)
+	{
+		for (int i = 1; i <= 8; i++)
+		{
+			SkScalar tempY = m_iOffset.y;
+			m_iOffset.y ++;
+			if (CollideBoarder(surface->w, surface->h) || CollideWall(walls))
+			{
+				m_iOffset.y = tempY;
+				break;
+			}
 		}
 	}
 
@@ -85,10 +113,16 @@ public:
 		Point points[4] = { p1, p2, p3, p4 };	// clockwise from left top point.
 		for (CWall wall : walls)
 		{
+			int i = 0;
 			for (Point p : points)
 			{
-				if (p.IncludedByPoints(wall.m_gPoints))
-					return true;
+				if (p.IncludedByPoints(wall.m_gPoints)) {
+					i++;
+				}
+			}
+			if (i >= 2)
+			{
+				return true;
 			}
 		}
 		return false;
