@@ -47,4 +47,3 @@ public:
 		return (x > m_iOffset.x) && (x < m_iOffset.x + m_iOffset.w) && (y > m_iOffset.y) && (y < m_iOffset.y + m_iOffset.h);
 	}
 };
-

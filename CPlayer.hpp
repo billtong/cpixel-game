@@ -62,9 +62,6 @@ public:
 				break;
 			}
 		}
-		if (m_eState != PlayerState::backhop && m_eState != PlayerState::walkhop) {
-			m_eState = PlayerState::stay;
-		}
 	}
 
 	void Hop(SDL_Surface* surface, vector<CWall> walls, int& counter)
@@ -78,12 +75,41 @@ public:
 		else {
 			for (int i = 1; i <= 8; i++)
 			{
+				SkScalar tempX = m_iOffset.x;
 				SkScalar tempY = m_iOffset.y;
 				m_iOffset.y = counter < (sm_hopHeight / 2) ? m_iOffset.y - 1 : m_iOffset.y + 1;
 				if (CollideBoarder(surface->w, surface->h) || CollideWall(walls))
 				{
+					m_iOffset.x = tempX;
 					m_iOffset.y = tempY;
 					break;
+				}
+			}
+
+			if (m_eState == PlayerState::backhop)
+			{
+				for (int i = 1; i <= 6; i++)
+				{
+					SkScalar tempX = m_iOffset.x;
+					m_iOffset.x--;
+					if (CollideBoarder(surface->w, surface->h) || CollideWall(walls))
+					{
+						m_iOffset.x = tempX;
+						break;
+					}
+				}
+			}
+			if (m_eState == PlayerState::walkhop)
+			{
+				for (int i = 1; i <= 6; i++)
+				{
+					SkScalar tempX = m_iOffset.x;
+					m_iOffset.x++;
+					if (CollideBoarder(surface->w, surface->h) || CollideWall(walls))
+					{
+						m_iOffset.x = tempX;
+						break;
+					}
 				}
 			}
 			counter++;
@@ -132,5 +158,4 @@ public:
 	{
 		return m_iOffset.x < 0 || m_iOffset.x > (w - m_iOffset.w) || m_iOffset.y < 0 || m_iOffset.y > (h - m_iOffset.h);
 	}
-
 };

@@ -10,37 +10,20 @@ int UpdateGameLvlZeroUI(void* data)
 	{
 		if (window->m_iSurface != NULL) SDL_FreeSurface(window->m_iSurface);
 		if (window->m_iTexture != NULL) SDL_DestroyTexture(window->m_iTexture);
-		switch (g_iPlayer.m_eState)
-		{
-		case PlayerState::stay:
-			g_iPlayer.Fall(window->m_iSurface, g_gWalls);
-			break;
-		case PlayerState::walk:
-			g_iPlayer.Walk(false, window->m_iSurface, g_gWalls);
-			break;
-		case PlayerState::back:
-			g_iPlayer.Walk(true, window->m_iSurface, g_gWalls);
-			break;
-		case PlayerState::hop:
-			g_iPlayer.Hop(window->m_iSurface, g_gWalls, hopCounter);
-			break;
-		case PlayerState::walkhop:
-			g_iPlayer.Hop(window->m_iSurface, g_gWalls, hopCounter);
-			g_iPlayer.Walk(false, window->m_iSurface, g_gWalls);
-			break;
-		case PlayerState::backhop:
-			g_iPlayer.Hop(window->m_iSurface, g_gWalls, hopCounter);
-			g_iPlayer.Walk(true, window->m_iSurface, g_gWalls);
-			break;
-		default:
-			g_iPlayer.Fall(window->m_iSurface, g_gWalls);
-			break;
-		}
 		g_iBmpLvlZero = DrawGameLvlZero(rect.w, rect.h);
 		window->m_iSurface = SDL_CreateRGBSurfaceFrom(g_iBmpLvlZero.getPixels(), rect.w, rect.h, 32, rect.w * 4, RGBA.rmask, RGBA.gmask, RGBA.bmask, RGBA.amask);
 		window->m_iTexture = SDL_CreateTextureFromSurface(window->m_iRenderer, window->m_iSurface);
 		SDL_RenderCopy(window->m_iRenderer, window->m_iTexture, NULL, &rect);
 		SDL_RenderPresent(window->m_iRenderer);
+		
+		if (g_iPlayer.m_eState == PlayerState::stay)
+			g_iPlayer.Fall(window->m_iSurface, g_gWalls);
+		else if (g_iPlayer.m_eState == PlayerState::walk || g_iPlayer.m_eState == PlayerState::back)
+			g_iPlayer.Walk(g_iPlayer.m_eState == PlayerState::back, window->m_iSurface, g_gWalls);
+		else if (g_iPlayer.m_eState == PlayerState::hop || g_iPlayer.m_eState == PlayerState::walkhop || g_iPlayer.m_eState == PlayerState::backhop)
+			g_iPlayer.Hop(window->m_iSurface, g_gWalls, hopCounter);
+		else
+			g_iPlayer.Fall(window->m_iSurface, g_gWalls);
 		SDL_Delay(16.6);
 	}
 	SDL_Log("lvl zero update ui thread finished!");
@@ -85,15 +68,17 @@ void InitGameLvlZero(CWindow* window)
 				window->m_bQuit = true;
 				break;
 			case SDL_KEYDOWN:
-
-				if (g_iPlayer.m_eState == PlayerState::hop)
+				SDL_Log("key down");
+				if (g_iPlayer.m_eState == PlayerState::hop || g_iPlayer.m_eState == PlayerState::walkhop || g_iPlayer.m_eState == PlayerState::backhop)
 				{
 					switch (key)
 					{
 					case SDLK_LEFT:
+						SDL_Log("left pressed");
 						g_iPlayer.m_eState = PlayerState::backhop;
 						break;
 					case SDLK_RIGHT:
+						SDL_Log("right pressed");
 						g_iPlayer.m_eState = PlayerState::walkhop;
 						break;
 					default:
@@ -117,6 +102,13 @@ void InitGameLvlZero(CWindow* window)
 						break;
 					}
 				}
+				break;
+			case SDL_KEYUP:
+				SDL_Log("key up");
+				if (g_iPlayer.m_eState == PlayerState::hop || g_iPlayer.m_eState == PlayerState::walkhop || g_iPlayer.m_eState == PlayerState::backhop)
+					g_iPlayer.m_eState = PlayerState::hop;
+				else
+					g_iPlayer.m_eState = PlayerState::stay;
 				break;
 			default:
 				break;
