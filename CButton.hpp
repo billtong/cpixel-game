@@ -13,26 +13,20 @@
 #include <SDL2/SDL.h>
 #endif
 
-using std::string;
+#include"entity.hpp"
 
-typedef struct offset
-{
-	SkScalar w;
-	SkScalar h;
-	SkScalar x;
-	SkScalar y;
-} Offset;
+using std::string;
 
 class CButton
 {
 public:
-	string m_stBtnName;
+	string m_stName;
 	const int* m_pBtnRGB;
 	const int* m_pTxtRGB;
 	Offset m_iOffset;
 public:
 	CButton(string name, const int* btnRgb, const int* txtRgb, Offset offset) {
-		m_stBtnName = name;
+		m_stName = name;
 		m_pBtnRGB = btnRgb;
 		m_pTxtRGB = txtRgb;
 		m_iOffset = offset;
@@ -42,12 +36,11 @@ public:
 		SkRRect rrect = SkRRect::MakeRect({ m_iOffset.x, m_iOffset.y, m_iOffset.x + m_iOffset.w, m_iOffset.y + m_iOffset.h });
 		SkVector radii[] = { {10, 10}, {10, 10}, {10, 10}, {10, 10} };
 		rrect.setRectRadii(rrect.getBounds(), radii);
-		SDL_Event e;
 		paint.setARGB(0xFF, m_pBtnRGB[0], m_pBtnRGB[1], m_pBtnRGB[2]);
 		canvas.drawRRect(rrect, paint);
 		paint.setTextSize(40);
 		paint.setARGB(0xFF, m_pTxtRGB[0], m_pTxtRGB[1], m_pTxtRGB[2]);
-		canvas.drawString(m_stBtnName.c_str(), m_iOffset.x + 50, m_iOffset.y + 40, paint);
+		canvas.drawString(m_stName.c_str(), m_iOffset.x + 50, m_iOffset.y + 40, paint);
 	}
 	bool ContainsPoint(int x, int y)
 	{

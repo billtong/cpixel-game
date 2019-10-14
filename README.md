@@ -11,3 +11,5 @@ figure it yourself pls
 # log
 - 20191010
 待改进：需要把UI + Thread放在用一个header file下。目的是公用变量。每一个场景做成单独的一个header file。
+- 20191011
+commit1: 完成页面线程切换，从menu到lvl0
