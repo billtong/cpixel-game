@@ -11,16 +11,20 @@
 
 #include "CWindow.hpp"
 #include "CButton.hpp"
+#include "CWall.hpp"
 #include "CPlayer.hpp"
 #include "variables.h"
 
 static SkBitmap g_iBmpLvlZero;
-
 static CPlayer g_iPlayer;
+
+
+static vector<CWall> g_gWalls;
+
+void InitGameLvlZero(CWindow* window);
 
 int UpdateGameLvlZeroUI(void* data);
 SkBitmap DrawGameLvlZero(int w, int h);
 
 int UpdateGForce(void* data);
 
-void InitGameLvlZero(CWindow * window);

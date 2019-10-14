@@ -28,15 +28,11 @@ SkBitmap DrawGameLvlZero(int w, int h)
 	canvas.clear(SK_ColorBLACK);
 	SkPaint paint;
 	paint.setAntiAlias(true);
-	SkPath path;
-	path.moveTo(0, 400);
-	path.lineTo(200, 400);
-	path.lineTo(200, 430);
-	path.lineTo(0, 430);
-	path.close();
-	paint.setStyle(SkPaint::kStrokeAndFill_Style);
-	paint.setARGB(0xFF, RGBTable.white[0], RGBTable.white[1], RGBTable.white[2]);
-	canvas.drawPath(path, paint);
+	
+	for (CWall wall : g_gWalls)
+	{
+		wall.Draw(canvas, paint);
+	}
 	g_iPlayer.DrawPlayer(canvas, paint);
 	return g_iBmpLvlZero;
 }
@@ -47,8 +43,8 @@ int UpdateGForce(void* data)
 	CWindow* window = static_cast<CWindow*>(data);
 	while (!window->m_bQuit && !window->m_bStop)
 	{
-		g_iPlayer.m_iOffset.y++;
-		SDL_Delay(20);
+		g_iPlayer.Move(SDLK_DOWN, window->m_iSurface, g_gWalls);
+		SDL_Delay(16.6);
 	}
 	SDL_Log("lvl zero upgrade GForce thread finished!");
 	return 0;
@@ -56,8 +52,14 @@ int UpdateGForce(void* data)
 
 void InitGameLvlZero(CWindow* window)
 {
+	// inital walls
+	Point wallPoints[4] = { {0, 400}, {200, 400}, {200, 430}, {0, 430} };
+	vector<Point> points(wallPoints, wallPoints+4);
+	CWall walla(points, RGBTable.white);
+	g_gWalls.push_back(walla);
+
 	SDL_Thread* thread1 = SDL_CreateThread(UpdateGameLvlZeroUI, "update_game_lvl_zero", window);
-	//SDL_Thread* thread2= SDL_CreateThread(UpdateGForce, "update_player_fall", window);
+	SDL_Thread* thread2= SDL_CreateThread(UpdateGForce, "update_player_fall", window);
 	SDL_Event e;
 	int threadReturnValue;
 	while (!window->m_bQuit)
@@ -73,7 +75,7 @@ void InitGameLvlZero(CWindow* window)
 			case SDL_KEYDOWN:
 				if (key == SDLK_LEFT || key == SDLK_RIGHT || key == SDLK_UP || key == SDLK_DOWN)
 				{
-					g_iPlayer.Move(key);
+					g_iPlayer.Move(key, window->m_iSurface, g_gWalls);
 				}
 				break;
 			default:
