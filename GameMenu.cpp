@@ -4,7 +4,7 @@ int UpdateMenuUI(void* data)
 {
 	SDL_Log("update menu ui thread started!");
 	CWindow* window = static_cast<CWindow*>(data);
-	SDL_Rect rect = {0, 0, window->m_iSurface->w, window->m_iSurface->h};
+	SDL_Rect rect = { 0, 0, window->m_iSurface->w, window->m_iSurface->h };
 	while (!window->m_bQuit && !window->m_bStop)
 	{
 		if (window->m_iSurface != NULL) SDL_FreeSurface(window->m_iSurface);

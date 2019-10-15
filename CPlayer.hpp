@@ -15,7 +15,7 @@ using std::string;
 using std::to_string;
 
 enum class PlayerState { stay, walk, back, hop, walkhop, backhop };
-enum class PlayerSide {left, right, up, down};
+enum class PlayerSide { left, right, up, down };
 
 class CPlayer
 {
@@ -30,7 +30,7 @@ public:
 	PlayerState m_eState;
 
 public:
-	CPlayer(int blood,string name, const int* rgb, SkScalar x, SkScalar y)
+	CPlayer(int blood, string name, const int* rgb, SkScalar x, SkScalar y)
 	{
 		m_nBlood = blood;
 		m_pRGB = rgb;
@@ -67,7 +67,7 @@ public:
 
 	void Hop(SDL_Surface* surface, vector<CWall> walls, int& counter)
 	{
-		
+
 		if (counter == sm_hopHeight)
 		{
 			counter = 0;
@@ -120,7 +120,7 @@ public:
 		for (int i = 1; i <= 8; i++)
 		{
 			SkScalar tempY = m_iOffset.y;
-			m_iOffset.y ++;
+			m_iOffset.y++;
 			if (CollideBoarder(surface->w, surface->h) || CollideWall(walls, PlayerSide::down) || CollideWall(walls, PlayerSide::left) || CollideWall(walls, PlayerSide::right))
 			{
 				m_iOffset.y = tempY;
@@ -175,7 +175,7 @@ public:
 
 	bool CollideBoarder(int w, int h)
 	{
-		return m_iOffset.x < 0 || m_iOffset.x > (w - m_iOffset.w) || m_iOffset.y < 0 || m_iOffset.y > (h - m_iOffset.h);
+		return m_iOffset.x < 0 || m_iOffset.x >(w - m_iOffset.w) || m_iOffset.y < 0 || m_iOffset.y >(h - m_iOffset.h);
 	}
 
 	bool FallIntoLava(CLava lava, int h)

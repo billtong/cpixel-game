@@ -33,7 +33,10 @@ int UpdateGameLvlZeroUI(void* data)
 			if (g_iPlayer.m_eState == PlayerState::stay)
 				g_iPlayer.Fall(window->m_iSurface, g_gWalls);
 			else if (g_iPlayer.m_eState == PlayerState::walk || g_iPlayer.m_eState == PlayerState::back)
+			{
 				g_iPlayer.Walk(g_iPlayer.m_eState == PlayerState::back, window->m_iSurface, g_gWalls);
+				g_iPlayer.Fall(window->m_iSurface, g_gWalls);
+			}
 			else if (g_iPlayer.m_eState == PlayerState::hop || g_iPlayer.m_eState == PlayerState::walkhop || g_iPlayer.m_eState == PlayerState::backhop)
 				g_iPlayer.Hop(window->m_iSurface, g_gWalls, hopCounter);
 			else
@@ -53,7 +56,7 @@ SkBitmap DrawGameLvlZero(int w, int h)
 	canvas.clear(SK_ColorBLACK);
 	SkPaint paint;
 	paint.setAntiAlias(true);
-	
+
 	g_iLava.Draw(canvas, paint, w, h);
 
 	for (CWall wall : g_gWalls)
@@ -68,7 +71,7 @@ void InitGameLvlZero(CWindow* window)
 {
 	// inital walls
 	Point wallPoints[6] = { {0, 400}, {200, 400}, {200, 350}, {300, 350}, {300, 430}, {0, 430} };
-	vector<Point> points(wallPoints, wallPoints+6);
+	vector<Point> points(wallPoints, wallPoints + 6);
 	CWall walla(points, RGBTable.white);
 	g_gWalls.push_back(walla);
 	SDL_Thread* thread = SDL_CreateThread(UpdateGameLvlZeroUI, "update_game_lvl_zero", window);

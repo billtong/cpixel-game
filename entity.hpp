@@ -21,7 +21,7 @@ public:
 	SkScalar m_iY;
 public:
 	Point(SkScalar x, SkScalar y) : m_iX(x), m_iY(y) {}
-	
+
 	bool operator==(const Point& point)
 	{
 		return m_iX == point.m_iX && m_iY == point.m_iY;
@@ -36,14 +36,14 @@ public:
 			{
 				if (points[i].m_iY > points[j].m_iY)
 					return (points[i].m_iY >= p1.m_iY && points[j].m_iY <= p1.m_iY) || (points[i].m_iY >= p2.m_iY && points[j].m_iY <= p2.m_iY);
-				else 
+				else
 					return (points[j].m_iY >= p1.m_iY && points[i].m_iY <= p1.m_iY) || (points[j].m_iY >= p2.m_iY && points[i].m_iY <= p2.m_iY);
 			}
 			if (p1.m_iY == points[i].m_iY && p1.m_iY == points[j].m_iY && p2.m_iY == points[i].m_iY && p2.m_iY == points[j].m_iY)
 			{
 				if (points[i].m_iX > points[j].m_iX)
 					return (points[i].m_iX >= p1.m_iX && points[j].m_iX <= p1.m_iY) || (points[i].m_iX >= p2.m_iX && points[j].m_iX <= p2.m_iX);
-				else 
+				else
 					return (points[j].m_iX >= p1.m_iX && points[i].m_iX <= p1.m_iX) || (points[j].m_iX >= p2.m_iX && points[i].m_iX <= p2.m_iX);
 			}
 
