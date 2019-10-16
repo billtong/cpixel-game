@@ -5,8 +5,6 @@ This is an simple 2d game for SDL2 and Skia library practice in CPlusPlus
 1. [sdl2 download](https://www.libsdl.org/download-2.0.php)
 2. [skia set-up tutorial](https://skia.org/user/download)
 3. build a new solution in Visual Studio 2019 with this repository and load libraries of sdl2 and skia
-## Others
-loading
 # log
 - 20191010
 待改进：需要把UI + Thread放在用一个header file下。目的是公用变量。每一个场景做成单独的一个header file。
