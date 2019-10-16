@@ -58,9 +58,9 @@ void InitGameLvlZero(CWindow* window)
 	Point wallPointsA[6] = { {0, 400}, {200, 400}, {200, 350}, {300, 350}, {300, 430}, {0, 430} };
 	Point wallPointsB[6] = { {350, 300}, {380, 300}, {380, 450}, {800, 450}, {800, 480}, {350, 480} };
 	Point wallPointsC[4] = { {450, 350}, {700, 350}, {700, 400}, {450, 400} };
-	CWall wallA(* new vector<Point>(wallPointsA, wallPointsA+6), RGBTable.white);
-	CWall wallB(* new vector<Point>(wallPointsB, wallPointsB+6), RGBTable.green);
-	CWall wallC(* new vector<Point>(wallPointsC, wallPointsC+4), RGBTable.yellow);
+	CWall wallA(*new vector<Point>(wallPointsA, wallPointsA + 6), RGBTable.white);
+	CWall wallB(*new vector<Point>(wallPointsB, wallPointsB + 6), RGBTable.green);
+	CWall wallC(*new vector<Point>(wallPointsC, wallPointsC + 4), RGBTable.yellow);
 	g_gWalls.push_back(wallA);
 	g_gWalls.push_back(wallB);
 	g_gWalls.push_back(wallC);

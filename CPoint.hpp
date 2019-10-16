@@ -42,7 +42,7 @@ public:
 			if (p1.m_iY == points[i].m_iY && p1.m_iY == points[j].m_iY && p2.m_iY == points[i].m_iY && p2.m_iY == points[j].m_iY)
 			{
 				if (points[i].m_iX > points[j].m_iX)
-					return (points[i].m_iX >= p1.m_iX && points[j].m_iX <= p1.m_iY) || (points[i].m_iX >= p2.m_iX && points[j].m_iX <= p2.m_iX);
+					return (points[i].m_iX >= p1.m_iX && points[j].m_iX <= p1.m_iX) || (points[i].m_iX >= p2.m_iX && points[j].m_iX <= p2.m_iX);
 				else
 					return (points[j].m_iX >= p1.m_iX && points[i].m_iX <= p1.m_iX) || (points[j].m_iX >= p2.m_iX && points[i].m_iX <= p2.m_iX);
 			}
