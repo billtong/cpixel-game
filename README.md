@@ -12,6 +12,10 @@ This is an simple 2d game for SDL2 and Skia library practice in CPlusPlus
 commit1: 完成页面线程切换，从menu到level 0
 - 20191013
 	- 今天完成CWall，CPlayerX。
-	- 需要加强Player和Wall之间Collide的判断准确性，尽可能减少线程的使用，预防ui堵塞
+	- 需要加强玩家实例和墙实例之间Collide的判断准确性，尽可能减少线程的使用，预防ui堵塞
 - 20191014
-	- 添加岩浆和命， 修改了Player进入Wall的bug
+	- 添加岩浆和命， 修改了玩家实例进入Wall的bug
+- 20191016
+	- 给玩家添加了fall状态， 完善了状态判断
+	- 将Move状态机抽象成CPlayer的内部类
+	- 需要修改一个玩家实例在墙实例坐下的判断bug

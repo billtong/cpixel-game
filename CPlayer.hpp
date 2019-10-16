@@ -11,6 +11,9 @@
 #include "CLava.hpp"
 #include "variables.h"
 
+#define METHOD_PROLOGUE(theClass, localClass) theClass* pThis = ((theClass*)((char*)(this) - offsetof(theClass, m_i##localClass)));
+
+using std::vector;
 using std::string;
 using std::to_string;
 
@@ -29,7 +32,6 @@ public:
 	Offset m_iOffset;
 	PlayerMoveState m_eState;
 
-public:
 	CPlayer(int blood, string name, const int* rgb, SkScalar x, SkScalar y)
 	{
 		m_nBlood = blood;
@@ -39,7 +41,6 @@ public:
 		m_iOffset = temp;
 		m_eState = PlayerMoveState::fall;
 	}
-
 	void DrawPlayer(SkCanvas& canvas, SkPaint& paint)
 	{
 		//printf("%d %d %d %d\n", m_iOffset.x, m_iOffset.y, m_iOffset.w, m_iOffset.h);
@@ -50,7 +51,6 @@ public:
 		SkRRect rrect = SkRRect::MakeRect({ m_iOffset.x, m_iOffset.y, m_iOffset.x + m_iOffset.w, m_iOffset.y + m_iOffset.h });
 		canvas.drawRRect(rrect, paint);
 	}
-
 	void Walk(bool isBack, SDL_Surface* surface, vector<CWall> walls)
 	{
 		for (int i = 1; i <= 6; i++)
@@ -64,7 +64,6 @@ public:
 			}
 		}
 	}
-
 	void Hop(SDL_Surface* surface, vector<CWall> walls, int& counter)
 	{
 
@@ -91,7 +90,6 @@ public:
 			counter++;
 		}
 	}
-
 	void Fall(SDL_Surface* surface, vector<CWall> walls)
 	{
 		for (int i = 1; i <= 8; i++)
@@ -106,7 +104,6 @@ public:
 			}
 		}
 	}
-
 	bool CollideWall(vector<CWall> walls, PlayerSide side)
 	{
 		// clockwise from left top point.
@@ -150,14 +147,91 @@ public:
 		}
 		return false;
 	}
-
 	bool CollideBoarder(int w, int h)
 	{
 		return m_iOffset.x < 0 || m_iOffset.x >(w - m_iOffset.w) || m_iOffset.y < 0 || m_iOffset.y >(h - m_iOffset.h);
 	}
-
 	bool FallIntoLava(CLava lava, int h)
 	{
 		return m_iOffset.y >= h - lava.m_nHeight;
 	}
+	class CPlayerMoveStateMachine
+	{
+	public:
+		int m_nHopCounter;
+		CPlayerMoveStateMachine()
+		{
+			m_nHopCounter = 0;
+		}
+
+		void DispatchMove(SDL_Event e)
+		{
+			METHOD_PROLOGUE(CPlayer, CPlayerMoveStateMachine);
+			SDL_Keycode key = e.key.keysym.sym;
+			switch (e.type)
+			{
+			case SDL_KEYDOWN:
+				if (pThis->m_eState == PlayerMoveState::hop || pThis->m_eState == PlayerMoveState::walkhop || pThis->m_eState == PlayerMoveState::backhop)
+				{
+					switch (key)
+					{
+					case SDLK_LEFT:
+						pThis->m_eState = PlayerMoveState::backhop;
+						break;
+					case SDLK_RIGHT:
+						pThis->m_eState = PlayerMoveState::walkhop;
+						break;
+					default:
+						break;
+					}
+				}
+				else {
+					switch (key)
+					{
+					case SDLK_LEFT:
+						pThis->m_eState = PlayerMoveState::back;
+						break;
+					case SDLK_RIGHT:
+						pThis->m_eState = PlayerMoveState::walk;
+						break;
+					case SDLK_UP:
+						if (pThis->m_eState != PlayerMoveState::fall)
+						{
+							pThis->m_eState = PlayerMoveState::hop;
+						}
+						break;
+					default:
+						pThis->m_eState = PlayerMoveState::fall;
+						break;
+					}
+				}
+				break;
+			case SDL_KEYUP:
+				//SDL_Log("key up");
+				if (pThis->m_eState == PlayerMoveState::hop || pThis->m_eState == PlayerMoveState::walkhop || pThis->m_eState == PlayerMoveState::backhop)
+					pThis->m_eState = PlayerMoveState::hop;
+				else
+					pThis->m_eState = PlayerMoveState::fall;
+				break;
+			default:
+				break;
+			}
+		}
+
+		void ExecuteMove(SDL_Surface *surface, vector<CWall> walls)
+		{
+			METHOD_PROLOGUE(CPlayer, CPlayerMoveStateMachine);
+			if (pThis->m_eState == PlayerMoveState::fall)
+				pThis->Fall(surface, walls);
+			else if (pThis->m_eState == PlayerMoveState::walk || pThis->m_eState == PlayerMoveState::back)
+			{
+				pThis->Walk(pThis->m_eState == PlayerMoveState::back, surface, walls);
+				pThis->Fall(surface, walls);
+			}
+			else if (pThis->m_eState == PlayerMoveState::hop || pThis->m_eState == PlayerMoveState::walkhop || pThis->m_eState == PlayerMoveState::backhop)
+				pThis->Hop(surface, walls, m_nHopCounter);
+			else
+				pThis->Fall(surface, walls);
+		}
+	}m_iCPlayerMoveStateMachine;
 };

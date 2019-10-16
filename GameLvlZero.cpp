@@ -29,17 +29,7 @@ int UpdateGameLvlZeroUI(void* data)
 			SDL_RenderCopy(window->m_iRenderer, window->m_iTexture, NULL, &rect);
 			SDL_RenderPresent(window->m_iRenderer);
 
-			if (g_iPlayer.m_eState == PlayerMoveState::fall)
-				g_iPlayer.Fall(window->m_iSurface, g_gWalls);
-			else if (g_iPlayer.m_eState == PlayerMoveState::walk || g_iPlayer.m_eState == PlayerMoveState::back)
-			{
-				g_iPlayer.Walk(g_iPlayer.m_eState == PlayerMoveState::back, window->m_iSurface, g_gWalls);
-				g_iPlayer.Fall(window->m_iSurface, g_gWalls);
-			}
-			else if (g_iPlayer.m_eState == PlayerMoveState::hop || g_iPlayer.m_eState == PlayerMoveState::walkhop || g_iPlayer.m_eState == PlayerMoveState::backhop)
-				g_iPlayer.Hop(window->m_iSurface, g_gWalls, hopCounter);
-			else
-				g_iPlayer.Fall(window->m_iSurface, g_gWalls);
+			g_iPlayer.m_iCPlayerMoveStateMachine.ExecuteMove(window->m_iSurface, g_gWalls);
 		}
 		SDL_Delay(16.6);
 	}
@@ -55,13 +45,9 @@ SkBitmap DrawGameLvlZero(int w, int h)
 	canvas.clear(SK_ColorBLACK);
 	SkPaint paint;
 	paint.setAntiAlias(true);
-
 	g_iLava.Draw(canvas, paint, w, h);
-
 	for (CWall wall : g_gWalls)
-	{
 		wall.Draw(canvas, paint);
-	}
 	g_iPlayer.DrawPlayer(canvas, paint);
 	return g_iBmpLvlZero;
 }
@@ -69,10 +55,15 @@ SkBitmap DrawGameLvlZero(int w, int h)
 void InitGameLvlZero(CWindow* window)
 {
 	// inital walls
-	Point wallPoints[6] = { {0, 400}, {200, 400}, {200, 350}, {300, 350}, {300, 430}, {0, 430} };
-	vector<Point> points(wallPoints, wallPoints + 6);
-	CWall walla(points, RGBTable.white);
-	g_gWalls.push_back(walla);
+	Point wallPointsA[6] = { {0, 400}, {200, 400}, {200, 350}, {300, 350}, {300, 430}, {0, 430} };
+	Point wallPointsB[6] = { {350, 300}, {380, 300}, {380, 450}, {800, 450}, {800, 480}, {350, 480} };
+	Point wallPointsC[4] = { {450, 350}, {700, 350}, {700, 400}, {450, 400} };
+	CWall wallA(* new vector<Point>(wallPointsA, wallPointsA+6), RGBTable.white);
+	CWall wallB(* new vector<Point>(wallPointsB, wallPointsB+6), RGBTable.green);
+	CWall wallC(* new vector<Point>(wallPointsC, wallPointsC+4), RGBTable.yellow);
+	g_gWalls.push_back(wallA);
+	g_gWalls.push_back(wallB);
+	g_gWalls.push_back(wallC);
 	SDL_Thread* thread = SDL_CreateThread(UpdateGameLvlZeroUI, "update_game_lvl_zero", window);
 	SDL_Event e;
 	int threadReturnValue;
@@ -80,57 +71,11 @@ void InitGameLvlZero(CWindow* window)
 	{
 		while (SDL_PollEvent(&e) != 0)
 		{
-			SDL_Keycode key = e.key.keysym.sym;
+			g_iPlayer.m_iCPlayerMoveStateMachine.DispatchMove(e);
 			switch (e.type)
 			{
 			case SDL_QUIT:
 				window->m_bQuit = true;
-				break;
-			case SDL_KEYDOWN:
-				//SDL_Log("key down");
-				if (g_iPlayer.m_eState == PlayerMoveState::hop || g_iPlayer.m_eState == PlayerMoveState::walkhop || g_iPlayer.m_eState == PlayerMoveState::backhop)
-				{
-					switch (key)
-					{
-					case SDLK_LEFT:
-						//SDL_Log("left pressed");
-						g_iPlayer.m_eState = PlayerMoveState::backhop;
-						break;
-					case SDLK_RIGHT:
-						//SDL_Log("right pressed");
-						g_iPlayer.m_eState = PlayerMoveState::walkhop;
-						break;
-					default:
-						break;
-					}
-				}
-				else {
-					switch (key)
-					{
-					case SDLK_0:
-						SDL_Log("%d", g_iPlayer.CollideWall(g_gWalls, PlayerSide::down));
-						break;
-					case SDLK_LEFT:
-						g_iPlayer.m_eState = PlayerMoveState::back;
-						break;
-					case SDLK_RIGHT:
-						g_iPlayer.m_eState = PlayerMoveState::walk;
-						break;
-					case SDLK_UP:
-						g_iPlayer.m_eState = PlayerMoveState::hop;
-						break;
-					default:
-						g_iPlayer.m_eState = PlayerMoveState::fall;
-						break;
-					}
-				}
-				break;
-			case SDL_KEYUP:
-				//SDL_Log("key up");
-				if (g_iPlayer.m_eState == PlayerMoveState::hop || g_iPlayer.m_eState == PlayerMoveState::walkhop || g_iPlayer.m_eState == PlayerMoveState::backhop)
-					g_iPlayer.m_eState = PlayerMoveState::hop;
-				else
-					g_iPlayer.m_eState = PlayerMoveState::fall;
 				break;
 			default:
 				break;
