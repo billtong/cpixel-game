@@ -6,7 +6,7 @@
 #include <core/SkRRect.h>
 #include <core/SkString.h>
 
-#include "entity.hpp"
+#include "CPoint.hpp"
 #include "CWall.hpp"
 #include "CLava.hpp"
 #include "variables.h"
@@ -14,7 +14,7 @@
 using std::string;
 using std::to_string;
 
-enum class PlayerState { stay, walk, back, hop, walkhop, backhop };
+enum class PlayerMoveState {stay, walk, back, hop, walkhop, backhop, fall };
 enum class PlayerSide { left, right, up, down };
 
 class CPlayer
@@ -27,7 +27,7 @@ public:
 	const static int sm_hopHeight = 30;
 	string m_stName;
 	Offset m_iOffset;
-	PlayerState m_eState;
+	PlayerMoveState m_eState;
 
 public:
 	CPlayer(int blood, string name, const int* rgb, SkScalar x, SkScalar y)
@@ -37,7 +37,7 @@ public:
 		m_stName = name;
 		Offset temp = { sm_nW, sm_nH, x, y };
 		m_iOffset = temp;
-		m_eState = PlayerState::stay;
+		m_eState = PlayerMoveState::fall;
 	}
 
 	void DrawPlayer(SkCanvas& canvas, SkPaint& paint)
@@ -71,7 +71,7 @@ public:
 		if (counter == sm_hopHeight)
 		{
 			counter = 0;
-			m_eState = PlayerState::stay;
+			m_eState = PlayerMoveState::fall;
 		}
 		else {
 			for (int i = 1; i <= 8; i++)
@@ -84,32 +84,9 @@ public:
 					break;
 				}
 			}
-
-			if (m_eState == PlayerState::backhop)
+			if (m_eState == PlayerMoveState::backhop || m_eState == PlayerMoveState::walkhop)
 			{
-				for (int i = 1; i <= 6; i++)
-				{
-					SkScalar tempX = m_iOffset.x;
-					m_iOffset.x--;
-					if (CollideBoarder(surface->w, surface->h) || CollideWall(walls, PlayerSide::left))
-					{
-						m_iOffset.x = tempX;
-						break;
-					}
-				}
-			}
-			if (m_eState == PlayerState::walkhop)
-			{
-				for (int i = 1; i <= 6; i++)
-				{
-					SkScalar tempX = m_iOffset.x;
-					m_iOffset.x++;
-					if (CollideBoarder(surface->w, surface->h) || CollideWall(walls, PlayerSide::right))
-					{
-						m_iOffset.x = tempX;
-						break;
-					}
-				}
+				Walk(m_eState == PlayerMoveState::backhop, surface, walls);
 			}
 			counter++;
 		}
@@ -124,6 +101,7 @@ public:
 			if (CollideBoarder(surface->w, surface->h) || CollideWall(walls, PlayerSide::down) || CollideWall(walls, PlayerSide::left) || CollideWall(walls, PlayerSide::right))
 			{
 				m_iOffset.y = tempY;
+				m_eState = PlayerMoveState::stay;
 				break;
 			}
 		}

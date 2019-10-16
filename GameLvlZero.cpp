@@ -29,15 +29,14 @@ int UpdateGameLvlZeroUI(void* data)
 			SDL_RenderCopy(window->m_iRenderer, window->m_iTexture, NULL, &rect);
 			SDL_RenderPresent(window->m_iRenderer);
 
-
-			if (g_iPlayer.m_eState == PlayerState::stay)
+			if (g_iPlayer.m_eState == PlayerMoveState::fall)
 				g_iPlayer.Fall(window->m_iSurface, g_gWalls);
-			else if (g_iPlayer.m_eState == PlayerState::walk || g_iPlayer.m_eState == PlayerState::back)
+			else if (g_iPlayer.m_eState == PlayerMoveState::walk || g_iPlayer.m_eState == PlayerMoveState::back)
 			{
-				g_iPlayer.Walk(g_iPlayer.m_eState == PlayerState::back, window->m_iSurface, g_gWalls);
+				g_iPlayer.Walk(g_iPlayer.m_eState == PlayerMoveState::back, window->m_iSurface, g_gWalls);
 				g_iPlayer.Fall(window->m_iSurface, g_gWalls);
 			}
-			else if (g_iPlayer.m_eState == PlayerState::hop || g_iPlayer.m_eState == PlayerState::walkhop || g_iPlayer.m_eState == PlayerState::backhop)
+			else if (g_iPlayer.m_eState == PlayerMoveState::hop || g_iPlayer.m_eState == PlayerMoveState::walkhop || g_iPlayer.m_eState == PlayerMoveState::backhop)
 				g_iPlayer.Hop(window->m_iSurface, g_gWalls, hopCounter);
 			else
 				g_iPlayer.Fall(window->m_iSurface, g_gWalls);
@@ -89,17 +88,17 @@ void InitGameLvlZero(CWindow* window)
 				break;
 			case SDL_KEYDOWN:
 				//SDL_Log("key down");
-				if (g_iPlayer.m_eState == PlayerState::hop || g_iPlayer.m_eState == PlayerState::walkhop || g_iPlayer.m_eState == PlayerState::backhop)
+				if (g_iPlayer.m_eState == PlayerMoveState::hop || g_iPlayer.m_eState == PlayerMoveState::walkhop || g_iPlayer.m_eState == PlayerMoveState::backhop)
 				{
 					switch (key)
 					{
 					case SDLK_LEFT:
 						//SDL_Log("left pressed");
-						g_iPlayer.m_eState = PlayerState::backhop;
+						g_iPlayer.m_eState = PlayerMoveState::backhop;
 						break;
 					case SDLK_RIGHT:
 						//SDL_Log("right pressed");
-						g_iPlayer.m_eState = PlayerState::walkhop;
+						g_iPlayer.m_eState = PlayerMoveState::walkhop;
 						break;
 					default:
 						break;
@@ -108,27 +107,30 @@ void InitGameLvlZero(CWindow* window)
 				else {
 					switch (key)
 					{
+					case SDLK_0:
+						SDL_Log("%d", g_iPlayer.CollideWall(g_gWalls, PlayerSide::down));
+						break;
 					case SDLK_LEFT:
-						g_iPlayer.m_eState = PlayerState::back;
+						g_iPlayer.m_eState = PlayerMoveState::back;
 						break;
 					case SDLK_RIGHT:
-						g_iPlayer.m_eState = PlayerState::walk;
+						g_iPlayer.m_eState = PlayerMoveState::walk;
 						break;
 					case SDLK_UP:
-						g_iPlayer.m_eState = PlayerState::hop;
+						g_iPlayer.m_eState = PlayerMoveState::hop;
 						break;
 					default:
-						g_iPlayer.m_eState = PlayerState::stay;
+						g_iPlayer.m_eState = PlayerMoveState::fall;
 						break;
 					}
 				}
 				break;
 			case SDL_KEYUP:
 				//SDL_Log("key up");
-				if (g_iPlayer.m_eState == PlayerState::hop || g_iPlayer.m_eState == PlayerState::walkhop || g_iPlayer.m_eState == PlayerState::backhop)
-					g_iPlayer.m_eState = PlayerState::hop;
+				if (g_iPlayer.m_eState == PlayerMoveState::hop || g_iPlayer.m_eState == PlayerMoveState::walkhop || g_iPlayer.m_eState == PlayerMoveState::backhop)
+					g_iPlayer.m_eState = PlayerMoveState::hop;
 				else
-					g_iPlayer.m_eState = PlayerState::stay;
+					g_iPlayer.m_eState = PlayerMoveState::fall;
 				break;
 			default:
 				break;

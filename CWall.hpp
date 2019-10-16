@@ -7,7 +7,7 @@
 #include <core/SkRRect.h>
 #include <core/SkString.h>
 
-#include "entity.hpp"
+#include "CPoint.hpp"
 #include "variables.h"
 
 using std::string;

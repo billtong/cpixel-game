@@ -13,7 +13,7 @@
 #include <SDL2/SDL.h>
 #endif
 
-#include"entity.hpp"
+#include"CPoint.hpp"
 
 using std::string;
 
