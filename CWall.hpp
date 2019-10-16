@@ -16,10 +16,10 @@ using std::vector;
 class CWall
 {
 public:
-	vector<Point> m_gPoints;
+	vector<CPoint> m_gPoints;
 	const int* m_gRGB;
 public:
-	CWall(vector<Point> points, const int* rgb) {
+	CWall(vector<CPoint> points, const int* rgb) {
 		m_gPoints = points;
 		m_gRGB = rgb;
 	}

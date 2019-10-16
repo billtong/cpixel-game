@@ -19,3 +19,4 @@ commit1: 完成页面线程切换，从menu到level 0
 	- 给玩家添加了fall状态， 完善了状态判断
 	- 将Move状态机抽象成CPlayer的内部类
 	- 修改玩家实例在墙实例左下的判断bug
+	- 抽象游戏场景到CGameScene类，添加CText类

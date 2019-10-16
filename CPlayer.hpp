@@ -107,37 +107,37 @@ public:
 	bool CollideWall(vector<CWall> walls, PlayerSide side)
 	{
 		// clockwise from left top point.
-		Point p1(m_iOffset.x, m_iOffset.y);
-		Point p2(m_iOffset.x + m_iOffset.w, m_iOffset.y);
-		Point p3(m_iOffset.x + m_iOffset.w, m_iOffset.y + m_iOffset.h);
-		Point p4(m_iOffset.x, m_iOffset.y + m_iOffset.h);
+		CPoint p1(m_iOffset.x, m_iOffset.y);
+		CPoint p2(m_iOffset.x + m_iOffset.w, m_iOffset.y);
+		CPoint p3(m_iOffset.x + m_iOffset.w, m_iOffset.y + m_iOffset.h);
+		CPoint p4(m_iOffset.x, m_iOffset.y + m_iOffset.h);
 		switch (side)
 		{
 		case PlayerSide::left:
 			for (CWall wall : walls)
 			{
-				if (Point::TwoPointsIntersectPoints(p1, p4, wall.m_gPoints))
+				if (CPoint::TwoPointsIntersectPoints(p1, p4, wall.m_gPoints))
 					return true;
 			}
 			break;
 		case PlayerSide::right:
 			for (CWall wall : walls)
 			{
-				if (Point::TwoPointsIntersectPoints(p2, p3, wall.m_gPoints))
+				if (CPoint::TwoPointsIntersectPoints(p2, p3, wall.m_gPoints))
 					return true;
 			}
 			break;
 		case PlayerSide::up:
 			for (CWall wall : walls)
 			{
-				if (Point::TwoPointsIntersectPoints(p1, p2, wall.m_gPoints))
+				if (CPoint::TwoPointsIntersectPoints(p1, p2, wall.m_gPoints))
 					return true;
 			}
 			break;
 		case PlayerSide::down:
 			for (CWall wall : walls)
 			{
-				if (Point::TwoPointsIntersectPoints(p3, p4, wall.m_gPoints))
+				if (CPoint::TwoPointsIntersectPoints(p3, p4, wall.m_gPoints))
 					return true;
 			}
 			break;

@@ -14,20 +14,20 @@ typedef struct _offset
 	SkScalar y;
 } Offset;
 
-class Point
+class CPoint
 {
 public:
 	SkScalar m_iX;
 	SkScalar m_iY;
 public:
-	Point(SkScalar x, SkScalar y) : m_iX(x), m_iY(y) {}
+	CPoint(SkScalar x, SkScalar y) : m_iX(x), m_iY(y) {}
 
-	bool operator==(const Point& point)
+	bool operator==(const CPoint& point)
 	{
 		return m_iX == point.m_iX && m_iY == point.m_iY;
 	}
 
-	static bool TwoPointsIntersectPoints(Point p1, Point p2, vector<Point> points)
+	static bool TwoPointsIntersectPoints(CPoint p1, CPoint p2, vector<CPoint> points)
 	{
 		for (int i = 0; i < points.size(); i++)
 		{
@@ -51,7 +51,7 @@ public:
 		return false;
 	}
 
-	bool IncludedByPointPaths(vector<Point> points)
+	bool IncludedByPointPaths(vector<CPoint> points)
 	{
 		for (int i = 0; i < points.size(); i++)
 		{

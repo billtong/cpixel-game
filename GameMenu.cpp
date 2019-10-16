@@ -9,7 +9,7 @@ int UpdateMenuUI(void* data)
 	{
 		if (window->m_iSurface != NULL) SDL_FreeSurface(window->m_iSurface);
 		if (window->m_iTexture != NULL) SDL_DestroyTexture(window->m_iTexture);
-		g_iBmpMenu = DrawMenu(rect.w, rect.h);
+		DrawMenu(rect.w, rect.h);
 		window->m_iSurface = SDL_CreateRGBSurfaceFrom(g_iBmpMenu.getPixels(), rect.w, rect.h, 32, rect.w * 4,
 			RGBA.rmask, RGBA.gmask, RGBA.bmask, RGBA.amask);
 		window->m_iTexture = SDL_CreateTextureFromSurface(window->m_iRenderer, window->m_iSurface);
@@ -21,7 +21,7 @@ int UpdateMenuUI(void* data)
 	return 0;
 }
 
-SkBitmap DrawMenu(int w, int h)
+void DrawMenu(int w, int h)
 {
 	g_iBmpMenu.setInfo(SkImageInfo::Make(w, h, kBGRA_8888_SkColorType, kOpaque_SkAlphaType));
 	g_iBmpMenu.allocPixels();
@@ -29,17 +29,14 @@ SkBitmap DrawMenu(int w, int h)
 	SkPaint paint;
 	canvas.clear(SK_ColorBLACK);
 	paint.setAntiAlias(true);
-	paint.setTextSize(60);
-	paint.setARGB(0xFF, RGBTable.red[0], RGBTable.red[1], RGBTable.red[2]);
-	canvas.drawString("320", 100, 100, paint);
-	paint.setARGB(0xFF, RGBTable.yellow[0], RGBTable.yellow[1], RGBTable.yellow[2]);
-	canvas.drawString("Fun", 200, 100, paint);
-	paint.setARGB(0xFF, RGBTable.blue[0], RGBTable.blue[1], RGBTable.blue[2]);
-	canvas.drawString("Game", 300, 100, paint);
-	g_iBtnStart.DrawButton(canvas, paint);
-	g_iBtnCtrl.DrawButton(canvas, paint);
-	g_iBtnCrdt.DrawButton(canvas, paint);
-	return g_iBmpMenu;
+	for (CText txt : g_gTxt)
+	{
+		txt.DrawText(canvas, paint);
+	}
+	for (CButton btn : g_gBtn)
+	{
+		btn.DrawButton(canvas, paint);
+	}
 }
 
 void InitMenu()
@@ -48,6 +45,11 @@ void InitMenu()
 	{
 		g_InitWindow->Init("Pixel Game", WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
+	CText textA = { RGBTable.red , 60, {100, 100}, "320" };
+	CText textB = { RGBTable.yellow, 60, {200, 100}, "Fun" };
+	CText textC = { RGBTable.blue , 60, {300, 100}, "Game" };
+	g_gTxt = { textA, textB, textC };
+
 	SDL_Thread* thread = SDL_CreateThread(UpdateMenuUI, "menu_ui_update", g_InitWindow);
 	SDL_Event e;
 	int threadReturnValue;
@@ -67,7 +69,7 @@ void InitMenu()
 					g_InitWindow->m_bStop = true;
 					SDL_WaitThread(thread, &threadReturnValue);
 					g_InitWindow->m_bStop = false;
-					InitGameLvlZero(g_InitWindow);
+					bootstrap(g_InitWindow);
 					return;
 				}
 				if (g_iBtnCtrl.ContainsPoint(e.motion.x, e.motion.y))

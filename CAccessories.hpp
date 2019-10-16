@@ -47,3 +47,18 @@ public:
 		return (x > m_iOffset.x) && (x < m_iOffset.x + m_iOffset.w) && (y > m_iOffset.y) && (y < m_iOffset.y + m_iOffset.h);
 	}
 };
+
+class CText
+{
+public:
+	const int* m_gTextRGB;
+	int m_nTextSize;
+	CPoint m_pPosition;
+	string m_stText;
+	void DrawText(SkCanvas& canvas, SkPaint& paint)
+	{
+		paint.setTextSize(m_nTextSize);
+		paint.setARGB(0xFF, m_gTextRGB[0], m_gTextRGB[1], m_gTextRGB[2]);
+		canvas.drawString(m_stText.c_str(), m_pPosition.m_iX, m_pPosition.m_iY, paint);
+	}
+};

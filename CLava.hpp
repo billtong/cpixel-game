@@ -14,7 +14,7 @@ public:
 	const int m_nHeight;
 	const int* m_gRGB;
 public:
-	CLava(const int* rgb, const int height) : m_gRGB(rgb), m_nHeight(height) {}
+	CLava(const int height) : m_nHeight(height), m_gRGB(RGBTable.maroon) {}
 	void Draw(SkCanvas& canvas, SkPaint& paint, SkScalar w, SkScalar h)
 	{
 		SkRRect rrect = SkRRect::MakeRect({ 0, h - m_nHeight, w,  h });
