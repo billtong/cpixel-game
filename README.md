@@ -5,6 +5,8 @@ This is an simple 2d game for SDL2 and Skia library practice in CPlusPlus
 1. [sdl2 download](https://www.libsdl.org/download-2.0.php)
 2. [skia set-up tutorial](https://skia.org/user/download)
 3. build a new solution in Visual Studio 2019 with this repository and load libraries of sdl2 and skia
+## Others
+loading
 # log
 - 20191010
 待改进：需要把UI + Thread放在用一个header file下。目的是公用变量。每一个场景做成单独的一个header file。
@@ -20,3 +22,4 @@ commit1: 完成页面线程切换，从menu到level 0
 	- 将Move状态机抽象成CPlayer的内部类
 	- 修改玩家实例在墙实例左下的判断bug
 	- 抽象游戏场景到CGameScene类，添加CText类
+	- 小bug：如果将m_iSurface指针到处乱传递，回报错，尽量不要用它作为parameter
