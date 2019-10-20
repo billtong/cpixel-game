@@ -17,9 +17,8 @@ public:
 	SDL_Texture* m_iTexture;
 	bool m_bQuit;
 	bool m_bStop;
-
-public:
-	void Init(const char* name, int width, int height) {
+	void Init(const char* name, int width, int height) 
+	{
 		m_bQuit = false;
 		m_bStop = false;
 		m_iWindow = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
@@ -27,7 +26,8 @@ public:
 		SDL_RenderClear(m_iRenderer);
 		m_iSurface = SDL_GetWindowSurface(m_iWindow);
 	}
-	void Destroy() {
+	void Destroy() 
+	{
 		if (m_iSurface != NULL) SDL_FreeSurface(m_iSurface);
 		if (m_iTexture != NULL) SDL_DestroyTexture(m_iTexture);
 		if (m_iRenderer != NULL) SDL_DestroyRenderer(m_iRenderer);

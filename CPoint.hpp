@@ -4,22 +4,16 @@
 #include <vector>
 #include <cmath>
 
-using std::vector;
+#include "variables.h"
 
-typedef struct _offset
-{
-	SkScalar w;
-	SkScalar h;
-	SkScalar x;
-	SkScalar y;
-} Offset;
+using std::vector;
 
 class CPoint
 {
 public:
 	SkScalar m_iX;
 	SkScalar m_iY;
-public:
+
 	CPoint(SkScalar x, SkScalar y) : m_iX(x), m_iY(y) {}
 
 	bool operator==(const CPoint& point)
@@ -77,7 +71,6 @@ public:
 				}
 			}
 		}
-		// find if it is inside the path
 		return false;
 	}
 };

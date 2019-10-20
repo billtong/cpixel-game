@@ -1,6 +1,5 @@
 #pragma once
 
-#include<string>
 #include<vector>
 #include <core/SkCanvas.h>
 #include <core/SkPaint.h>
@@ -10,7 +9,6 @@
 #include "CPoint.hpp"
 #include "variables.h"
 
-using std::string;
 using std::vector;
 
 class CWall
@@ -18,7 +16,6 @@ class CWall
 public:
 	vector<CPoint> m_gPoints;
 	const int* m_gRGB;
-public:
 	CWall(vector<CPoint> points, const int* rgb) {
 		m_gPoints = points;
 		m_gRGB = rgb;

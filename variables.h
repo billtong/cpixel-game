@@ -1,5 +1,13 @@
 #pragma once
 
+typedef struct _offset
+{
+	SkScalar w;
+	SkScalar h;
+	SkScalar x;
+	SkScalar y;
+} Offset;
+
 static struct RGBA {
 	Uint32 rmask = 0x00ff0000;
 	Uint32 gmask = 0x0000ff00;
