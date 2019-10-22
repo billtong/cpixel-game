@@ -17,8 +17,8 @@ using std::vector;
 using std::string;
 using std::to_string;
 
-enum class PlayerMoveState {stay, walk, back, hop, walkhop, backhop, fall };
-const static char* PlayerMoveStateName[7] = { "stay", "walk", "back", "hop", "walkhop", "backhop", "fall" };	/* for debuging only */
+enum class PlayerMoveState { stay, walk, back, hop, walkhop, backhop, fall, walkfall, backfall };
+const static char* PlayerMoveStateName[9] = { "stay", "walk", "back", "hop", "walkhop", "backhop", "fall", "walkfall", "backfall" };	/* for debuging only */
 enum class PlayerSide { left, right, up, down };
 
 class CPlayer
@@ -29,6 +29,9 @@ public:
 	const static int sm_nW = 10;
 	const static int sm_nH = 20;
 	const static int sm_hopHeight = 30;
+	int sm_nWalkSpeed;
+	int sm_nHopSpeed;
+	int sm_nFallSpeed;
 	string m_stName;
 	Offset m_iOffset;
 	PlayerMoveState m_eState;
@@ -41,6 +44,9 @@ public:
 		Offset temp = { sm_nW, sm_nH, x, y };
 		m_iOffset = temp;
 		m_eState = PlayerMoveState::fall;
+		sm_nWalkSpeed = 6;
+		sm_nHopSpeed = 6;
+		sm_nFallSpeed = 8;
 	}
 	
 	void DrawPlayer(SkCanvas& canvas, SkPaint& paint)
@@ -56,7 +62,7 @@ public:
 
 	void Walk(bool isBack, SDL_Surface* surface, vector<CWall> walls)
 	{
-		for (int i = 1; i <= 6; i++)
+		for (int i = 1; i <= sm_nWalkSpeed; i++)
 		{
 			SkScalar tempX = m_iOffset.x;
 			m_iOffset.x = isBack ? m_iOffset.x - 1 : m_iOffset.x + 1;
@@ -76,19 +82,21 @@ public:
 			m_eState = PlayerMoveState::fall;
 		}
 		else {
-			for (int i = 1; i <= 8; i++)
+			if (m_eState == PlayerMoveState::backhop || m_eState == PlayerMoveState::walkhop)
+			{
+				Walk(m_eState == PlayerMoveState::backhop, surface, walls);
+			}
+			for (int i = 1; i <= sm_nFallSpeed; i++)
 			{
 				SkScalar tempY = m_iOffset.y;
 				m_iOffset.y = counter < (sm_hopHeight / 2) ? m_iOffset.y - 1 : m_iOffset.y + 1;
 				if (CollideBoarder(surface->w, surface->h) || CollideWall(walls, PlayerSide::up) || CollideWall(walls, PlayerSide::down))
 				{
 					m_iOffset.y = tempY;
+					counter = 0;
+					m_eState = PlayerMoveState::fall;
 					break;
 				}
-			}
-			if (m_eState == PlayerMoveState::backhop || m_eState == PlayerMoveState::walkhop)
-			{
-				Walk(m_eState == PlayerMoveState::backhop, surface, walls);
 			}
 			counter++;
 		}
@@ -96,7 +104,14 @@ public:
 
 	void Fall(SDL_Surface* surface, vector<CWall> walls)
 	{
-		for (int i = 1; i <= 8; i++)
+		SkScalar temp = m_iOffset.y;
+		PlayerMoveState originState = m_eState;
+
+		if (m_eState == PlayerMoveState::backfall || m_eState == PlayerMoveState::walkfall)
+		{
+			Walk(m_eState == PlayerMoveState::backfall, surface, walls);
+		}
+		for (int i = 1; i <= sm_nFallSpeed; i++)
 		{
 			SkScalar tempY = m_iOffset.y;
 			m_iOffset.y++;
@@ -106,6 +121,22 @@ public:
 				m_eState = PlayerMoveState::stay;
 				break;
 			}
+		}
+
+		if (temp != m_iOffset.y)
+		{
+			if (originState == PlayerMoveState::walk)
+			{
+				m_eState = PlayerMoveState::walkfall;
+			}
+			else if (originState == PlayerMoveState::back)
+			{
+				m_eState = PlayerMoveState::backfall;
+			}
+		}
+		else if (originState != PlayerMoveState::fall)
+		{
+			m_eState = originState;
 		}
 	}
 
@@ -197,9 +228,20 @@ public:
 					switch (key)
 					{
 					case SDLK_UP:
-						if (pThis->m_eState != PlayerMoveState::fall)
+						if (pThis->m_eState != PlayerMoveState::fall && pThis->m_eState != PlayerMoveState::walkfall && pThis->m_eState != PlayerMoveState::backfall)
 						{
-							pThis->m_eState = PlayerMoveState::hop;
+							if (pThis->m_eState == PlayerMoveState::walk)
+							{
+								pThis->m_eState = PlayerMoveState::walkhop;
+							}
+							else if(pThis->m_eState == PlayerMoveState::back)
+							{
+								pThis->m_eState = PlayerMoveState::backhop;
+							}
+							else
+							{
+								pThis->m_eState = PlayerMoveState::hop;
+							}
 						}
 						break;
 					case SDLK_LEFT:
@@ -229,6 +271,7 @@ public:
 		void ExecuteMove(SDL_Surface *surface, vector<CWall> walls)
 		{
 			METHOD_PROLOGUE(CPlayer, CPlayerMoveStateMachine);
+			SDL_Log("%s", PlayerMoveStateName[static_cast<int>(pThis->m_eState)]);
 			if (pThis->m_eState == PlayerMoveState::hop || pThis->m_eState == PlayerMoveState::walkhop || pThis->m_eState == PlayerMoveState::backhop)
 				pThis->Hop(surface, walls, m_nHopCounter);
 			else if (pThis->m_eState == PlayerMoveState::walk || pThis->m_eState == PlayerMoveState::back)

@@ -43,7 +43,6 @@ public:
 		{
 			while (SDL_PollEvent(&e) != 0)
 			{
-				SDL_Log("%s", PlayerMoveStateName[static_cast<int>(player.m_eState)]);
 				player.m_iCPlayerMoveStateMachine.DispatchMove(e);
 				switch (e.type)
 				{

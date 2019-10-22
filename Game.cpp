@@ -27,8 +27,10 @@ int UpdateGameLevelZeroUI(void* data)
 		else {
 			if (window->m_iSurface != NULL) SDL_FreeSurface(window->m_iSurface);
 			if (window->m_iTexture != NULL) SDL_DestroyTexture(window->m_iTexture);
+			
 			g_iPlayer.m_iCPlayerMoveStateMachine.ExecuteMove(window->m_iSurface, g_iLvlZero.m_gWalls);
 			g_iLvlZero.DrawScene(rect.w, rect.h, g_iPlayer);
+			
 			window->m_iSurface = SDL_CreateRGBSurfaceFrom(g_iLvlZero.m_iBmpLevel.getPixels(), rect.w, rect.h, 32, rect.w * 4, RGBA.rmask, RGBA.gmask, RGBA.bmask, RGBA.amask);
 			window->m_iTexture = SDL_CreateTextureFromSurface(window->m_iRenderer, window->m_iSurface);
 			SDL_RenderCopy(window->m_iRenderer, window->m_iTexture, NULL, &rect);

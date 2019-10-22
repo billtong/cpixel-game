@@ -21,3 +21,5 @@ commit1: 完成页面线程切换，从menu到level 0
 	- 修改玩家实例在墙实例左下的判断bug
 	- 抽象游戏场景到CGameScene类，添加CText类
 	- 小bug：如果将m_iSurface指针到处乱传递，回报错，尽量不要用它作为parameter
+- 20191020
+	- 修理Player状态机判断和执行方法。

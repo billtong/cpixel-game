@@ -14,6 +14,7 @@ using std::function;
 
 enum class ButtonState { HOVER, ACTIVE, NORMAL };
 const static char* ButtonStateName[3] = { "Hover", "active", "normal" };	/* for debuging only */
+
 class CButton
 {
 public:
